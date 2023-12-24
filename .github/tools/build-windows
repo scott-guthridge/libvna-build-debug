@@ -12,5 +12,5 @@ mkdir "/tmp/${dir}"
 ./configure "--prefix=/tmp/${dir}" "LDFLAGS=-static-libgcc"
 make -j10 install
 cp /ucrt64/bin/libyaml*.dll "/tmp/${dir}/bin/"
-( cd /tmp && zip "${dir}" "${dir}" )
+( cd /tmp && zip -r "${dir}" "${dir}" )
 mv /tmp/${dir}.zip .
