@@ -1,5 +1,7 @@
 name: Make Release
-on: push
+on:
+  push:
+    tags: [ "v[0-9]*" ]
 
 jobs:
   make_release:
