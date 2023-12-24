@@ -11,6 +11,14 @@ mkdir "/tmp/${dir}"
 ./bootstrap
 ./configure "--prefix=/tmp/${dir}" "LDFLAGS=-static-libgcc"
 make -j10 install
+make pdfman
+mkdir "/tmp/${dir}/doc"
+mv src/*.pdf "/tmp/${dir}/doc"
 cp /ucrt64/bin/libyaml*.dll "/tmp/${dir}/bin/"
+cp /ucrt64/lib/libyaml*.a "/tmp/${dir}/lib"
+( cd "/tmp/${dir}" &&
+  mv share/COPYING doc &&
+  mv share/examples examples &&
+  rm -rf share )
 ( cd /tmp && zip -r "${dir}" "${dir}" )
 mv /tmp/${dir}.zip .
