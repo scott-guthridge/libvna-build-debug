@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         buildplat:
-        - { sys: ubuntu-20.04, arch: x86_64 }
+        - { sys: ubuntu-22.04, arch: x86_64 }
         - { sys: windows-2019, arch: x86_64 }
     runs-on: ${{ matrix.buildplat.sys }}
     steps:
@@ -17,7 +17,7 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
       run: |
         sudo apt-get update
-        sudo apt-get install autoconf automake build-essential \
+        sudo apt-get install autoconf automake build-essential
              debhelper-compat devscripts libtool libyaml-dev make
         ./bootstrap
         ./configure
@@ -37,7 +37,7 @@ jobs:
         bash .github/tools/build-windows
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
