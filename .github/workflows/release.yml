@@ -1,24 +1,40 @@
 name: Make Release
-on:
-  push:
-    tags: [ "v[0-9]*" ]
+on: push
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build assets for ${{matrix.buildplat.sys}} ${{matrix.buildplat.arch}}
+    strategy:
+      matrix:
+        buildplat:
+        - { sys: ubuntu-20.04, arch: x86_64 }
+        - { sys: windows-2019, arch: x86_64 }
+    runs-on: ${{ matrix.buildplat.sys }}
     steps:
-    - name: Install Dependencies
+    - name: Checkout Code
+      uses: actions/checkout@v3
+    - name: Build Debian Package (Linux)
+      if: ${{ runner.os == "Linux" }}
       run: |
         sudo apt-get update
         sudo apt-get install autoconf automake build-essential \
              debhelper-compat devscripts libtool libyaml-dev make
-    - name: Checkout Code
-      uses: actions/checkout@v3
-    - name: Build Debian Package
-      run: |
         ./bootstrap
         ./configure
-        make -j8 deb
+        make -j10 deb
+    - name: Setup MSYS2
+      if: ${{ runner.os == 'Windows' }}
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: UCRT64
+        update: true
+        install: mingw-w64-ucrt-${{matrix.buildplat.arch}}-gcc
+                 autoconf automake git make libtool pkg-config
+    - name: Build Libvna (Windows)
+      if: ${{ runner.os == 'Windows' }}
+      shell: msys2 {0}
+      run:
+        bash .github/tools/build-windows
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -29,9 +45,17 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
-    - name: Upload Release Assets
+    - name: Upload Release Assets (Linux)
+      if: ${{ runner.os == "Linux" }}
       uses: alexellis/upload-assets@0.4.0
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
         asset_paths: '["libvna-*.tar.gz", "deb/*.deb", "deb/*.dsc", "deb/*.buildinfo"]'
+    - name: Upload Release Assets (Windows)
+      if: ${{ runner.os == "Windows" }}
+      uses: alexellis/upload-assets@0.4.0
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        asset_paths: '["libvna-windows-x86_64.zip"]'

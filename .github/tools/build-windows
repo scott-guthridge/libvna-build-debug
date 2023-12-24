@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+root=libvna-windows-x86_64 
+git clone https://github.com/yaml/libyaml.git
+( cd libyaml
+    ./bootstrap
+    ./configure "--prefix=/ucrt64"
+    make install )
+./bootstrap
+[ ! -d "${root}" && mkdir "${root}" ]
+./configure "--prefix=${root}" "LDFLAGS=-static-libgcc"
+make -j10 install
+cp /ucrt64/bin/libyaml*.dll "${root}/bin/"
+zip "${root}" "${root}"
