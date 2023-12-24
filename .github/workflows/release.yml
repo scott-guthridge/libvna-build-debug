@@ -14,7 +14,7 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
     - name: Build Debian Package (Linux)
-      if: ${{ runner.os == "Linux" }}
+      if: ${{ runner.os == 'Linux' }}
       run: |
         sudo apt-get update
         sudo apt-get install autoconf automake build-essential \
@@ -46,14 +46,14 @@ jobs:
         draft: false
         prerelease: false
     - name: Upload Release Assets (Linux)
-      if: ${{ runner.os == "Linux" }}
+      if: ${{ runner.os == 'Linux' }}
       uses: alexellis/upload-assets@0.4.0
       env:
         GITHUB_TOKEN: ${{ github.token }}
       with:
         asset_paths: '["libvna-*.tar.gz", "deb/*.deb", "deb/*.dsc", "deb/*.buildinfo"]'
     - name: Upload Release Assets (Windows)
-      if: ${{ runner.os == "Windows" }}
+      if: ${{ runner.os == 'Windows' }}
       uses: alexellis/upload-assets@0.4.0
       env:
         GITHUB_TOKEN: ${{ github.token }}
