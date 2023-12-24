@@ -1,0 +1,117 @@
+== Misc ==
+
+    - In vnadata_load, make the filename extension case-insensitive
+      for determining the file type, e.g. .S4P === .s4p.
+
+    - Consider renaming El (leakage) to Ed (directivity), and Ef (forward)
+      to Et (transmission tracking).  Maintain backward compatiblity in
+      .vnacal files.
+
+== New Functions ==
+
+    - Add a new vnacal_*_parameter function that takes a vnadata_t
+      and returns a matrix of parameter handles.
+
+    - Add a new vnacal_*_parameter function that takes a matrix
+      representing a multi-port standard, a vector of gamma-el values, one
+      for each port, and returns a new matrix of parameter handles with
+      lengths of transmission line (possibly negative) added to each port.
+
+    - Add a new vnacal_*_parameter function that takes the parameter
+      handle for a single reflect standard and a gamma-el and returns
+      a new parameter handle reflecting the addition of a length of
+      transmission line in front of the standard. [Only if this makes
+      the API simpler - implement as front-end to the more general
+      function.]
+
+== Improvements to Documentation ==
+
+    - Create wiki, HTML, or LaTeX documentation with more in-depth
+      documentation on the theory and best practices for the library.
+      For example, in calibration, explain T and U parameters with
+      matrix elements and the Ts, Ti, Tx, Tm / Um, Ui, Ux, Us notation.
+      Explain that the reason we do everyting in T and U parameters is
+      that the system of equations becomes linear.
+
+== Improvements to the Examples ==
+
+    - Add example for UXYZ, a.k.a "unknown through"
+	unknown symmetrical line (S12=S21)
+	3 known reflects
+
+    - Add vnacal-T16-example.c using T-MM-SS-SM-MS standards.
+      Approach: generally follow the example of vnacal-TSD-example, but
+      in the simulated VNA, use the M = (Ts S + Ti) (Tx S + Tm)^-1 matrix
+      equation to generate the measured value, taking into account all four
+      T error matrices.  Note that test-vnacal-Silvonen16 already tests this
+      case and can serve as a starting point.
+
+    - Add example for TXYZ / LXYZ
+	through, 3 known reflects
+	Note: this is just a generalition on SOLT.
+
+    - Add example for LRRM
+	known line, 2 unknown equal reflects, match
+
+== Improvements to the Tests ==
+
+    - For the major diagonal of the error term matrix, instead of using
+      1.0 plus a complex normal, use a more general non-central random
+      number generator.
+
+    - Make tests that invoke each of the examples.  Create expected output
+      files and compare that values are approximately equal.  Be careful
+      with build and source directories set to different places.
+
+
+== Potential Additional New Functionality ==
+
+    - Add a function to calculate and return the error bounds covariance
+      matrix as described by the Van-hamme paper.  This gives an error
+      model of the error terms.  Something that may make this more
+      useful would be to then use the result to estimate the error in
+      a corrected S parameter matrix.
+
+    - Make the vnacommon functions public: remove the underscore prefix,
+      vnacommon_internal.h to vnacommon.h, add man page.  If publicized,
+      remove the const int i, j, k's from the interface since these have
+      no effect on the API and will likely mislead the caller.
+
+      Argument against: we could alternatively drop our matrix functions
+      and use the lapacke functions instead.  Publicizing ours would force
+      us to continue maintaining APIs for functions we no longer used.
+
+    - Add frequency-dependent Z0 support to vnacal_new, vnacal.
+      Complex reference impedances make sense only if you can specify
+      frequency dependent values.
+
+    - Bring back vnacal_apply_t from the git history (consider renaming
+      to vnacal_map_t to better match what it does and avoid confusion
+      with the vnacal_apply functions).  The purpose of this function
+      is to permit using a VNA with fewer ports than the DUT, and
+      making several measurements with different combinations of the DUT
+      connected to the VNA ports to determine the S parameters of the DUT.
+      When the other DUT ports are terminated in perfect match standards,
+      it's relatively simple -- it essentially amounts to just piecing
+      together the partial S parameters generated from each measurement.
+      A more interesting case, however is where the other DUT ports
+      are terminated in standards that are not quite perfect, either
+      known or unknown.  Note that even if these imperfect standards
+      are completely known, the S parameters can no longer be solved
+      as a linear system as the system contains products of the unknown
+      DUT S parameters.  In principle, though, it should be possible to
+      solve the system numerically if we're given enough measurements.
+
+      For each measurement, to describe what each DUT port is connected
+      to, we can use a port map with one entry per DUT port.  When the
+      port is connected to a standard, we can use one of the constant
+      VNACAL_MATCH, VNACAL_SHORT, etc. values or a value returned from
+      one of the vnacal_make_*_parameter functions.  These values are
+      never negative.  When a DUT port is connected to the VNA, we can
+      use the negative of the VNA port number.
+
+   - Determine what's needed to support network parameters in common
+     and differential form.
+
+   - Add noise figure support to touchstone import/export.
+

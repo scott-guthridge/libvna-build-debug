@@ -1,0 +1,112 @@
+== LIBVNA Examples ==
+
+Several example programs are included with the library.
+
+vnacal-SOLT-example.c:
+    Example of using the vnacal functions to calibrate a simulated
+    imperfect vector network analyzer using classic "short", "open",
+    "load", "through" calibration.  This example demonstrates 2x1
+    six-error term calibration.
+
+    Build:
+	cc -g -o vnacal-SOLT-example vnacal-SOLT-example.c -lvna -lyaml -lm
+
+    Run:
+	./vnacal-SOLT-example > vnacal-SOLT-example.out
+	gnuplot vnacal-SOLT-example.gnuplot
+
+    In the plot, dashed lines are measured values, solid lines are the
+    value corrected by calibration and points are calulated expected
+    values.  Notice that S11 is pretty far off before correction.
+    Because we're using a passive linear DUT, the S12 calibrated curve
+    and expected points aren't visible in the figure as they're exactly
+    covered by the S21 calibrated curve and expected points.
+
+
+vnacal-TRL-example.c:
+    Example of using the vnacal functions to calibrate a simulated
+    imperfect vector network analyzer using "through", "reflect",
+    "line" calibration.  This example demonstrates 2x2 ten term T and E
+    error correction.  The plot command first shows the corrected device
+    under test, then shows the now known reflect and line parameters.
+
+    Build:
+	cc -g -o vnacal-TRL-example vnacal-TRL-example.c -lvna -lyaml -lm
+
+    Run:
+	./vnacal-TRL-example > vnacal-TRL-example.out
+	gnuplot vnacal-TRL-example.gnuplot
+
+
+vnacal-TSD-example.c:
+    Example of using the vnacal functions to calibrate a simulated
+    imperfect vector network analyzer using "through", "short", "delay"
+    calibration.  This example demonstrates 2x2 ten term T and E error
+    correction.
+
+    Build:
+	cc -g -o vnacal-TSD-example vnacal-TSD-example.c -lvna -lyaml -lm
+
+    Run:
+	./vnacal-TSD-example > vnacal-TSD-example.out
+	gnuplot vnacal-TSD-example.gnuplot
+
+
+vnaproperty-example.c:
+    Use the vnaproperty module to load and print a YAML file.
+
+    Build:
+	cc -g -o vnaproperty-example vnaproperty-example.c -lvna -lyaml -lm
+
+    Run:
+	./vnaproperty-example input.yaml
+
+
+vnaconv-example.c:
+    Use network parameter conversion to analyze the 50-ohm to 75-ohm
+    L-pad.
+
+    Build:
+	cc -g -o vnaconv-example vnaconv-example.c -lvna -lm
+
+    Run:
+	./vnaconv-example
+
+
+vnadata-example.c:
+    Example of storing parameter data in a vnadata_t object and converting
+    from z-parameters to s-parameters.
+
+    Build:
+	cc -g -o vnadata-example vnadata-example.c -lvna -lm
+
+    Run:
+	./vnadata-example
+
+
+convert-parameters:
+    Program to convert between network parameter types and between
+    touchstone and NPD file formats.
+
+    Build:
+	cc -o convert-parameters convert-parameters.c -lvna -lm
+
+    Usage:
+	./convert-parameters [-f format] input-file output-file
+	Run with -\? for the full usage text.
+
+    Convert the sample Touchstone 2 data file from S parameters
+    to T parameters, saving in magnitude-angle format.
+
+	./convert-parameters -f Tma convert-parameters.ts out.ts
+
+    Convert from Touchstone 2 to Touchstone 1.
+
+	./convert-parameters convert-parameters.ts out.s2p
+
+    Convert the sample data file to insertion loss, return loss
+    and VSWR, saving in NPD format.
+
+	./convert-parameters -f IL,RL,VSWR convert-parameters.ts out.npd
+
+

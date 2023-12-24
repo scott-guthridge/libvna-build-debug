@@ -1,0 +1,620 @@
+.\"
+.\" Vector Network Analyzer Library
+.\" Copyright © 2020-2023 D Scott Guthridge <scott_guthridge@rompromity.net>
+.\"
+.\" This program is free software: you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published
+.\" by the Free Software Foundation, either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+.\" General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program.  If not, see <http://www.gnu.org/licenses/>.
+.\"
+.TH VNACAL 3 "JULY 2017" GNU
+.nh
+.SH NAME
+vnacal_apply, vnacal_apply_m, vnacal_create, vnacal_add_calibration, vnacal_delete_calibration, vnacal_find_calibration, vnacal_free, vnacal_get_calibration_end, vnacal_get_columns, vnacal_get_filename, vnacal_get_fmax, vnacal_get_fmin, vnacal_get_frequencies, vnacal_get_frequency_vector, vnacal_get_name, vnacal_get_rows, vnacal_get_type, vnacal_get_z0, vnacal_load, vnacal_name_to_type, vnacal_property_count, vnacal_property_delete, vnacal_property_get, vnacal_property_get_subtree, vnacal_property_keys, vnacal_property_set, vnacal_property_set_subtree, vnacal_property_type, vnacal_save, vnacal_set_dprecision, vnacal_set_fprecision, vnacal_type_to_name \- vector network analyzer calibration
+.\"
+.SH SYNOPSIS
+.B #include <vnacal.h>
+.\"
+.SS "Managing and Querying Calibrations"
+.PP
+.BI "vnacal_t *vnacal_create(vnaerr_error_fn_t *" error_fn ,
+.BI "void *" error_arg );
+.\"
+.PP
+.BI "vnacal_t *vnacal_load(const char *" pathname ,
+.if n \{\
+.in +4n
+.\}
+.BI "vnaerr_error_fn_t *" error_fn ", void *" error_arg );
+.if n\{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "int vnacal_save(vnacal_t *" vcp ", const char *" pathname );
+.\"
+.PP
+.BI "int vnacal_add_calibration(vnacal_t *" vcp ", const char *" name ,
+.if n \{\
+.in +4n
+.\}
+.BI "vnacal_new_t *" vnp );
+.if n \{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "int vnacal_find_calibration(const vnacal_t *" vcp ", const char *" name );
+.\"
+.PP
+.BI "int vnacal_delete_calibration(vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "int vnacal_get_calibration_end(const vnacal_t *" vcp );
+.\"
+.PP
+.BI "const char *vnacal_get_name(const vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "vnacal_type_t vnacal_get_type(const vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "int vnacal_get_rows(const vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "int vnacal_get_columns(const vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "int vnacal_get_frequencies(const vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "double vnacal_get_fmin(const vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "double vnacal_get_fmax(const vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "const double *vnacal_get_frequency_vector(const vnacal_t *" vcp ",
+.if n .RS +4n
+.BI "int " ci );
+.if n .RS -4n
+.\"
+.PP
+.BI "double complex vnacal_get_z0(const vnacal_t *" vcp ", int " ci );
+.\"
+.PP
+.BI "const char *vnacal_get_filename(const vnacal_t *" vcp );
+.\"
+.PP
+.BI "int vnacal_set_fprecision(vnacal_t *" vcp ", int " precision );
+.\"
+.PP
+.BI "int vnacal_set_dprecision(vnacal_t *" vcp ", int " precision );
+.\"
+.PP
+.BI "void vnacal_free(vnacal_t *" vcp );
+.\"
+.PP
+.BI "vnacal_type_t vnacal_name_to_type(const char *" name );
+.\"
+.PP
+.BI "const char *vnacal_type_to_name(vnacal_type_t " type );
+.\"
+.SS "Applying a Calibration to Measured Data"
+.PP
+.BI "int vnacal_apply(vnacal_t *" vcp ", int " ci ,
+.if n \{\
+.in +4n
+.\}
+.BI "const double *" frequency_vector ", int " frequencies ,
+.ie n \{\
+.br
+.\}
+.el \{\
+.in +4n
+.\}
+.BI "double complex *const *" a ", int " a_rows ", int " a_columns ,
+.br
+.BI "double complex *const *" b ", int " b_rows ", int " b_columns ,
+.br
+.BI "vnadata_t *" s_parameters );
+.in -4n
+.\"
+.PP
+.BI "int vnacal_apply_m(vnacal_t *" vcp ", int " ci ,
+.if n \{\
+.in +4n
+.\}
+.BI "const double *" frequency_vector ", int " frequencies ,
+.ie n \{\
+.br
+.\}
+.el \{\
+.in +4n
+.\}
+.BI "double complex *const *" m ", int " m_rows ", int " m_columns ,
+.br
+.BI "vnadata_t *" s_parameters );
+.in -4n
+.\"
+.SS "Managing User-Defined Properties"
+.PP
+.BI "int vnacal_property_set(vnacal_t *" vcp ", int " ci ,
+.if n \{\
+.in +4n
+.\}
+.BI "const char *" format ", ...);"
+.if n \{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "const char *vnacal_property_get(vnacal_t *" vcp ", int " ci ,
+.if n \{\
+.in +4n
+.\}
+.BI "const char *" format ", ...);"
+.if n \{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "int vnacal_property_delete(vnacal_t *" vcp ", int " ci ,
+.if n \{\
+.in +4n
+.\}
+.BI "const char *" format ", ...);"
+.if n \{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "int vnacal_property_type(vnacal_t *" vcp ", int " ci ,
+.if n \{\
+.in +4n
+.\}
+.BI "const char *" format ", ...);"
+.if n \{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "int vnacal_property_count(vnacal_t *" vcp ", int " ci ,
+.if n \{\
+.in +4n
+.\}
+.BI "const char *" format ", ...);"
+.if n \{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "const char **vnacal_property_keys(vnacal_t *" vcp ", int " ci ,
+.if n \{\
+.in +4n
+.\}
+.BI "const char *" format ", ...);"
+.if n \{\
+.in -4n
+.\}
+.\"
+.PP
+.BI "vnaproperty_t *vnacal_property_get_subtree(vnacal_t *" vcp ", int " ci ,
+.if n .in +4n
+.BI "const char *" format ", ...);"
+.if n .in -4n
+.\"
+.PP
+.BI "vnaproperty_t **vnacal_property_set_subtree(vnacal_t *" vcp ", int " ci ,
+.if n .in +4n
+.BI "const char *" format ", ...);"
+.if n .in -4n
+.\"
+.PP
+Link with \fI-lvna\fP \fI-lyaml\fP \fI-lm\fP.
+.sp
+.\"
+.SH DESCRIPTION
+These functions calculate error terms for vector network analyzers (VNAs)
+and use the calculated error terms to convert measured voltages from a
+device under test (DUT) to an s-parameter matrix.
+.PP
+The library is used in two phases: calibration and application.
+Calibration begins with a call to \fBvnacal_create\fP() to create
+a \fBvnacal_t\fP structure needed by most other vnacal functions.
+Next, the functions documented in \fBvnacal_new\fP(3) beginning with
+\fBvnacal_new_alloc\fP() and ending with \fBvnacal_new_solve\fP()
+build a new calibration and solve for its error correction terms from
+measurements of calibration standards.
+The \fBvnacal_add_calibration\fP() function stores the new calibration
+into the \fBvnacal_t\fP structure, and finally, \fBvnacal_save\fP()
+saves the new calibraton to a file.
+.PP
+In the application phase, \fBvnacal_load\fP() loads the calibration
+file saved above, and \fBvnacal_apply\fP() or \fBvnacal_apply_m\fP()
+apply the calibration to measurements of an unknown device under test
+to produce the corrected s-parameter matrix.
+The following sections document these functions in more detail.
+.\"
+.SS "Managing and Querying Calibrations"
+.PP
+\fBvnacal_create\fP() and \fBvnacal_load\fP() return pointers to opaque
+\fBvnacal_t\fP structures used by the other vnacal library functions.
+\fBvnacal_create\fP() is used when we're creating a new calibration file;
+\fBvnacal_load\fP() is used to load previously saved calibration data
+from a file.
+The \fBvnacal_t\fP structure is a container that stores one or more
+calibrations, typically calibrations for the same instrument covering
+different frequency ranges or test configurations.
+The optional \fIerror_fn\fP is a pointer to a function the library
+calls with a single line message (without newline) to report errors;
+\fIerror_arg\fP is arbitrary user data passed through to the error
+function.  Both can be \s-2NULL\s+2.  See \fBvnaerr\fP(3).
+Whether an \fIerror_fn\fP is provided or not, the library functions that
+can fail set \fBerrno\fP and return -1 or \s-2NULL\s+2 on failure.
+.PP
+\fBvnacal_save\fP() saves the calibrations stored in the \fBvnacal_t\fP
+structure to the file with name \fIpathname\fP.
+.PP
+\fBvnacal_add_calibration\fP() adds a new calibration to the
+\fBvnacal_t\fP structure and returns a calibration index (\fIci\fP)
+referring to the new calibration, or -1 on error.
+The \fIname\fP argument is a name for the new calibration.
+If \fIname\fP matches an existing calibration in the \fBvnacal_t\fP
+structure, \fBvnacal_add_calibration\fP() deletes and replaces the
+existing calibration.
+The \fIvnp\fP argument is a pointer to a \fBvnacal_new_t\fP structure.
+See \fBvnacal_new\fP(3).
+.PP
+\fBvnacal_find_calibration\fP() finds a calibration by name and
+returns the calibration index, \fIci\fP, or -1 if not found.
+.PP
+\fBvnacal_delete_calibration\fP() deletes the calibration with index
+\fIci\fP from the \fBvnacal_t\fP structure.
+.PP
+\fBvnacal_get_calibration_end\fP() returns one past the highest
+calibration index which is zero if the \fBvnacal_t\fP structure
+has none.
+This function can be used as follows to loop through all calibrations:
+.sp
+.in +2n
+.ft CW
+.nf
+for (int ci = 0; ci < vnacal_get_calibration_end(vcp); ++ci) {
+  const char *name;
+
+  if ((name = vnacal_get_name(vcp, ci)) != NULL) { /* skip deleted */
+    printf("%d %s\n", ci, name);
+  }
+}
+.fi
+.ft R
+.in -2n
+.PP
+\fBvnacal_get_name\fP() returns the name of the calibration with
+calibration index \fIci\fP, or \s-2NULL\s+2 if no calibration
+has index \fIci\fP.
+.PP
+\fBvnacal_get_type\fP() returns the type of error terms used in the
+calibration.  Refer to \fBvnacal_new\fP(3) for the list of types.
+.PP
+\fBvnacal_get_rows\fP() and \fBvnacal_get_columns\fP() return the
+dimensions of the calibration.  See \fBvnacal_new\fP(3).
+.PP
+\fBvnacal_get_frequencies\fP() returns the number of frequency
+points used in the calibration
+.PP
+\fBvnacal_get_fmin\fP() and \fBvnacal_get_fmax\fP() return
+the minimum and maximum frequency values, respectively, and
+\fBvnacal_get_frequency_vector\fP() returns a pointer to the full vector
+of calibration frequencies.
+.PP
+\fBvnacal_get_z0\fP() returns the reference impedance for the given
+calibration.
+.PP
+\fBvnacal_get_filename\fP() returns a pointer to the file name of
+the calibration file last loaded from or saved to, or \s-2NULL\s+2
+if the \fBvnacal_t\fP structure came from \fBvnacal_create\fP, and
+\fBvnacal_save\fP() hasn't been called.
+.PP
+\fBvnacal_set_fprecision\fP() and \fBvnacal_set_dprecision\fP() set
+the number of significant figures of precision \fBvnacal_save\fP()
+uses to print frequency and error parameter values, respectively, in
+the save file.
+If set to \s-2VNACAL_MAX_PRECISION\s+2, the library uses hexadecimal
+floating point notation with no loss of precision.
+By default, the default frequency precision is 7 and default data
+precision is 6.
+.PP
+\fBvnacal_free\fP() frees the memory used by the \fBvnacal_t\fP
+structure and any associated \fBvnacal_new_t\fP structures.
+.PP
+\fBvnacal_name_to_type\fP() takes an error term type name such as "T8",
+"U8", "E12", etc. and converts to the corresponding \fBvnacal_type_t\fP
+enum.
+The name match is case-insensitive.  If the name doesn't match any
+type, the function returns -1.
+The \fBvnacal_type_to_name\fP() function does the opposite: it returns
+the canonical (upper-case) name for the given \fItype\fP.
+.\"
+.SS "Applying a Calibration to Measured Data"
+.PP
+\fBvnacal_apply\fP() and \fBvnacal_apply_m\fP() apply the calibration
+with index \fIci\fP to measured data and store the resulting s-parameters
+into the caller provided \fBvnacal_data_t\fP structure.
+The \fIfrequency_vector\fP argument is a vector of length
+\fIfrequencies\fP of frequency points at which the measurements were
+taken.
+The range of frequencies must lie within the frequency range of the
+calibration; however, the frequency points don't have to align with those
+used during calibration: the library uses rational function interpolation
+when necessary to interpolate between frequency points.
+.PP
+If the vector network analyzer measures both signal leaving each port
+(\fIa\fP matrix) and signal entering each port (\fIb\fP matrix), use
+\fBvnacal_apply\fP().
+If it measures only the amount of detected signal, use
+\fBvnacal_apply_m\fP().
+In either case, the measurement matrix (\fIb\fP or \fIm\fP) must be
+square since each s-parameter, in general, depends on all cells of the
+measurement matrix.
+The dimensions of the calibration must also be square, and the same as
+the measurement matrix, with the exception that a 1x2 or 2x1 calibration
+can be used with a 2x2 measurement matrix.
+.\" TODO: update this when fixed
+.\" In order to apply a calibration to a DUT with a different number of
+.\" ports than the calibration, you need the \fBvnacal_map_apply\fP()
+.\" function which is not yet implemented.
+.PP
+For T8, U8, TE10, UE10, T16 and U16 error term types, the \fIa\fP matrix
+has dimensions \fIb_columns\fP x \fIb_columns\fP.
+The rows of \fIa\fP represent the amount of signal leaving each VNA port;
+the columns of \fIa\fP represent the VNA port that was nominally driving
+signal when the measurement was taken.
+When \fIa\fP and \fIb\fP matrices are given, the library calculates the
+measurement matrix using
+.ie t \{\
+.EQ
+\fIa\fP { \fIb\fP sup -1 }.
+.EN
+.\}
+.el \{\
+\fIb a\fP^-1.
+.\}
+.PP
+For E12 type error terms, the calibration is a \fIcolumns\fP long sequence
+of independent \fIrows\fP x 1 systems; therefore, \fIa\fP is a row of
+1x1 matrices, or equivalently a row vector of reference values.
+.PP
+The choice of \fBvnacal_apply\fP() vs. \fBvnacal_apply_m\fP() should
+be based on which form was used during calibration.
+.\"
+.SS "Managing User-Defined Properties"
+The library provides functions for storing user-defined structures and
+arrays with the calibrations.
+This is useful for describing the vector network analyzer, conditions
+under which a calibration was made, which detector measures which signal,
+switch settings needed for each measurement, and other information useful
+to the VNA device software.
+.PP
+All property functions take similar arguments: \fIvcp\fP is a pointer
+to the \fBvnacal_t\fP structure; \fIci\fP is the index of the calibration,
+or -1 to indicate a global property; \fIformat\fP is a format string as
+in \fBsprintf\fP(); and \fB...\fP is a list of additional arguments as
+appropriate for \fIformat\fP.
+The functions use \fIformat\fP and the additional arguments to construct
+a string which the property functions interpret.
+The string must begin with a descriptor consisting of dot-separated
+identifiers and square-bracket delimited array indices, giving a path
+through the property tree.
+.PP
+Some example descriptors are: \(lq.\(rq, \(lqabc\(rq,
+\(lqabc.def\(rq, \(lq[0]\(rq, \(lqnames[0]\(rq, \(lqnames[1]\(rq, and
+\(lq.abc.def[2][0].ghi\(rq.
+See \fBvnaproperty\fP(3) for complete documentation.
+.PP
+The \fBvnacal_property_set\fP() function places a scalar value into
+the property tree, creating and replacing objects along the path as needed
+to make them conform to the descriptor string.
+Normally, the argument to this function has the form
+\fIdescriptor\fP=\fIvalue\fP, where everything to the right of the equal
+sign is taken literally as the value to be set \- the right hand side may
+contain newlines.
+See \fBvnaproperty\fP(3) for additional documentation.
+Here are some examples:
+.sp
+vnacal_property_set(vcp, -1, "value1=5");
+.in +4n
+In the global property space, create a key-value map and set \fIvalue1\fP
+to 5.
+.in -4n
+.sp
+vnacal_property_set(vcp, -1, "value2=%d", j);
+.in +4n
+In the global property space, create a key-value map and set \fIvalue2\fP
+to the value in variable \fIj\fP.
+.in -4n
+.sp
+vnacal_property_set(vcp, 0, "my_value%d=%d", i, j);
+.in +4n
+In calibration zero, create a key-value map using \fIi\fP to complete
+the name and \fIj\fP as the value.
+.in -4n
+.sp
+vnacal_property_set(vcp, 0, "description=XYZ VNA\\nwith 2ft cables");
+.in +4n
+In calibration zero, create a key-value map and set \fIdescription\fP
+to the given text.
+.in -4n
+.sp
+vnacal_property_set(vcp, ci, "foo.bar=xyz");
+.in +4n
+Create a key-value map with member \fIfoo\fP containing a nested key-value
+map with \fIbar\fP set to \(lqxyz\(rq.
+.in -4n
+.sp
+.nf
+vnacal_property_set(vcp, ci, "detectorMatrix[0][0]=1");
+vnacal_property_set(vcp, ci, "detectorMatrix[0][1]=2");
+vnacal_property_set(vcp, ci, "detectorMatrix[1][0]=2");
+vnacal_property_set(vcp, ci, "detectorMatrix[1][1]=1");
+.fi
+.in +4n
+Create a key-value map with a nested set of lists under
+\fIdetectorMatrix\fP, forming a 2x2 matrix.
+.in -4n
+.sp
+.nf
+vnacal_property_set(vcp, ci, "my_reflect[0].name=short");
+vnacal_property_set(vcp, ci, "my_reflect[0].gamma=-1.0");
+vnacal_property_set(vcp, ci, "my_reflect[1].name=open");
+vnacal_property_set(vcp, ci, "my_reflect[1].gamma=1.0");
+vnacal_property_set(vcp, ci, "my_reflect[2].name=load");
+vnacal_property_set(vcp, ci, "my_reflect[2].gamma=0.0");
+.fi
+.in +4n
+Create a key-value map with member \fImy_reflect\fP containing a list
+of three key-value maps with \fIname\fP and \fIgamma\fP sub-members set
+as shown.
+.in -4n
+.PP
+Calling \fBvnacal_property_set\fP() on an existing property changes the
+property to the new value.
+If the descriptor contains an element with a conflicting type,
+\fBvnacal_property_set\fP() replaces the conflicting element.
+For example, if after building \fImy_reflect\fP in the previous example,
+we set "my_reflect=newValue", then \fImy_reflect\fP changes from a list
+to a scalar, deleting all six entries we created above.
+Similarly, setting the root element, ".=newValue", replaces the entire
+property tree with a scalar.
+.PP
+The \fBvnacal_property_get\fP() function retrieves a scalar value from
+the property tree.
+For example, after adding the values in the examples above,
+vnacal_property_get(vcp, ci, "value1") returns the string "5" and
+vnacal_property_get(vcp, ci, "my_reflect[1].gamma") returns the string
+"1.0".
+If the descriptor doesn't refer to a scalar, \fBvnacal_property_get\fP()
+fails with a return of \s-2NULL\s+2.
+.PP
+The \fBvnacal_property_delete\fP() function deletes a property from
+the tree.
+For example vnacal_property_delete(vcp, set, "detectorMatrix") deletes
+\fIdetectorMatrix\fP and its descendants; vnacal_property_delete(vcp, ci,
+".") deletes all properties.
+.PP
+The \fBvnacal_property_type\fP() function returns 'm' if the descriptor
+refers to a key-value map, 'l' if the descriptor refers to a list, or 's'
+if the descriptor refers to a scalar.  Given the detectorMatrix example
+above:
+.sp
+.RS +4n
+vnacal_property_type(vcp, ci, ".") returns 'm',
+.br
+vnacal_property_type(vcp, ci, "detectorMatrix") returns 'l',
+.br
+vnacal_property_type(vcp, ci, "detectorMatrix[0]") returns 'l', and
+.br
+vnacal_property_type(vcp, ci, "detectorMatrix[0][0]") returns 's'.
+.RS -4n
+.\"
+.PP
+If a component along the path doesn't exist or isn't the specified type,
+\fBvnacal_property_type\fP() fails with a return of -1.
+.\"
+.PP
+The \fBvnacal_property_count\fP() function returns the number of elements
+in a specified map or list.
+If applied to a scalar, it fails with a return of -1.
+.\"
+.PP
+Given a key-value map, \fBvnacal_property_keys\fP() returns a vector of
+pointers to all the keys in the map.
+The caller is responsible for freeing the returned vector (but not the
+strings it points to) by a call to \fBfree\fP(3).
+If applied to something other than a map, \fBvnacal_property_keys\fP()
+fails with a return of \s-2NULL\s+2.
+.\"
+.PP
+The \fBvnacal_property_get_subtree\fP() and
+\fBvnacal_property_set_subtree\fP() functions return pointers that can
+be manipulated by the functions in \fBvnaproperty\fP(3).
+Complete documentation can be found in that page.
+.\"
+.SH "RETURN VALUE"
+The functions that return int set \fBerrno\fP and return -1 on error.
+The functions that return pointer types set \fBerrno\fP and return
+\s-2NULL\s+2 on error.
+The \fBvnacal_get_type\fP() function returns one of the error
+parameter type values documented in \fBvnacal_new\fP(3), or -1 cast to
+\fBvnacal_type_t\fP on error.
+.PP
+If a non-\s-2NULL\s+2 \fIerror_fn\fP was passed to \fBvnacal_create\fP()
+or \fBvnacal_load\fP(), the \fBvnacal_create\fP(), \fBvnacal_load\fP(),
+\fBvnacal_save\fP(), \fBvnacal_add_calibration\fP(), \fBvnacal_apply\fP()
+and \fBvnacal_apply_m\fP() functions call the provided error function
+with a single line error message before returning failure.
+See \fBvnaerr\fP(3).
+.PP
+The \fBvnacal_find_calibration\fP(), \fBvnacal_delete_calibration\fP(),
+all the \fBvnacal_get_\fP*() functions and the \fBvnacal_property_\fP*()
+functions set \fBerrno\fP and return -1, \s-2NULL\s+2 or \s-2HUGE_VAL\s+2
+on failure, but don't invoke the error function.
+This makes it possible, for example, to use
+\fBvnacal_find_calibration\fP() to test if a given calibration name is
+present or \fBvnacal_get_name\fP() to test if there's a calibration at
+a given calibration index, without generating error messages.
+The caller is responsible for reporting any actual errors from these
+functions.
+.\"
+.SH ERRORS
+The library functions reports the following errors:
+.IP \fBEBADMSG\fP
+The file given to \fBvnacal_load\fP() has a syntax error or is otherwise
+invalid.
+.IP \fBEDOM\fP
+The \fIa\fP matrix given to \fBvnacal_apply\fP() or the system of
+equations used to solve for the s-parameters is singular.
+.IP \fBEINVAL\fP
+A library function was given an invalid parameter, a key given to one
+of the \fBvnacal_property_*\fP() functions has invalid syntax, or a
+component of the key has a type that doesn't match the property tree.
+.IP \fBENOENT\fP
+A file with \fIpathname\fP given to \fBvnacal_load\fP() doesn't exist,
+the \fIname\fP argument given to \fBvnacal_find_calibration\fP() wasn't
+found, or a \fBvnacal_property_*\fP() function was given a key that
+doesn't exist.
+.IP \fBENOMEM\fP
+A \fBmalloc\fP(3), \fBcalloc\fP(3) or \fBrealloc\fP(3) call was unable
+to allocate memory.
+.IP \fBENOPROTOPT\fP
+The format version of the file given to \fBvnacal_load\fP() is not
+supported by the library.
+.PP
+In addition, the library can report any error generated by \fBfopen\fP(3),
+\fBgetchar\fP(3) or \fBfprintf\fP(3).
+.SH BUGS
+You can create calibrations that cannot be used with \fBvnacal_apply\fP()
+or \fBvnacal_apply_m\fP(), e.g. a 3x1 calibration.
+The \fBvnacal_map_apply\fP() function needed to use these calibrations
+hasn't yet been implemented.
+.\"
+.SH EXAMPLES
+Example programs can be found in /usr/share/doc/libvna*/examples/ or
+/usr/local/share/doc/libvna/examples/.
+.\" .nf
+.\" .ft CW
+.\" .ft R
+.\" .fi
+.\"
+.SH "SEE ALSO"
+.BR vnacal_new "(3), " vnaconv "(3), " vnadata "(3), " vnaerr "(3),"
+.BR vnacal_parameter "(3), " vnaproperty "(3)"
