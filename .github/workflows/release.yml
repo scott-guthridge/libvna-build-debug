@@ -2,8 +2,24 @@ name: Make Release
 on: push
 
 jobs:
+  make_release:
+    name: Make Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
   build:
     name: Build assets for ${{matrix.buildplat.sys}} ${{matrix.buildplat.arch}}
+    needs: make_release
     strategy:
       matrix:
         buildplat:
@@ -35,16 +51,6 @@ jobs:
       shell: msys2 {0}
       run:
         bash .github/tools/build-windows
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
     - name: Upload Release Assets (Linux)
       if: ${{ runner.os == 'Linux' }}
       uses: alexellis/upload-assets@0.4.0
