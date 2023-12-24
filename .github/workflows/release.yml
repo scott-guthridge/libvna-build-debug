@@ -47,7 +47,7 @@ jobs:
         msystem: UCRT64
         update: true
         install: mingw-w64-ucrt-${{matrix.buildplat.arch}}-gcc
-                 autoconf automake git make libtool pkg-config
+                 autoconf automake git make libtool pkg-config zip
     - name: Build Libvna (Windows)
       if: ${{ runner.os == 'Windows' }}
       shell: msys2 {0}
