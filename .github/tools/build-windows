@@ -17,8 +17,8 @@ mv src/*.pdf "/tmp/${dir}/doc"
 cp /ucrt64/bin/libyaml*.dll "/tmp/${dir}/bin/"
 cp /ucrt64/lib/libyaml*.a "/tmp/${dir}/lib"
 ( cd "/tmp/${dir}" &&
-  mv share/COPYING doc &&
-  mv share/examples examples &&
+  mv share/doc/libvna/COPYING doc/ &&
+  mv share/doc/libvna/examples examples &&
   rm -rf share )
 ( cd /tmp && zip -r "${dir}" "${dir}" )
 mv /tmp/${dir}.zip .
