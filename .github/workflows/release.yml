@@ -73,7 +73,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
-        path: *.bottle.tar.gz
+        path: "*.bottle.tar.gz"
 
   make_release:
     name: Make Release
