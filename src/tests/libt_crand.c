@@ -208,7 +208,7 @@ static double random_truncated_rice(double nu, double sigma,
     {
 	double q1 = rice_cdf(nu, sigma, min);
 	double q2 = rice_cdf(nu, sigma, max);
-	double u1 = (double)random() / RAND_MAX;
+	double u1 = (double)random() / RANDOM_MAX;
 	double q = q1 + (q2 - q1) * u1;
 	double r = rice_inverse_cdf(nu, sigma, q);
 
@@ -233,8 +233,8 @@ static double random_truncated_rice(double nu, double sigma,
  */
 double complex libt_crandn()
 {
-    double u1 = (random() + 1.0) / RAND_MAX;    /* Box Muller method */
-    double u2 = (double)random() / RAND_MAX;
+    double u1 = (random() + 1.0) / (RANDOM_MAX + 1.0); /* Box Muller method */
+    double u2 = (double)random() / (RANDOM_MAX + 1.0);
     double r = sqrt(-log(u1));
     double a = 2 * M_PI * u2;
 
@@ -252,8 +252,8 @@ double complex libt_crandn_s(double sigma)
     double u1, u2, r, a;
 
     assert(sigma >= 0.0);
-    u1 = (random() + 1.0) / RAND_MAX;    /* Box Muller method */
-    u2 = (double)random() / RAND_MAX;
+    u1 = (random() + 1.0) / (RANDOM_MAX + 1.0);    /* Box Muller method */
+    u2 = (double)random() / (RANDOM_MAX + 1.0);
     r = sqrt(-2.0 * log(u1)) * sigma;
     a = 2 * M_PI * u2;
     return r * (cos(a) + I * sin(a));
@@ -273,7 +273,7 @@ double complex libt_crand_nsmm(double nu, double sigma, double min, double max)
 
     assert(nu >= 0.0 && sigma >= 0.0 && min >= 0 && min <= max);
     r = random_truncated_rice(nu, sigma, min, max);
-    u = (double)random() / RAND_MAX;
+    u = (double)random() / (RANDOM_MAX + 1.0);
     return r * cexp(2 * M_PI * I * u);
 }
 
@@ -284,7 +284,7 @@ double complex libt_crand_nsmm(double nu, double sigma, double min, double max)
  *   @min:   minimum magnitude to return
  *   @max:   maximum magnitude to return
  *   @rotation: center of arc
- *   @angle: interior angle of arc (mirror is negative)
+ *   @angle: interior angle of arc (mirror if negative)
  */
 double complex libt_crand_nsmmra(double nu, double sigma,
 	double min, double max, double rotation, double angle)
@@ -297,7 +297,7 @@ double complex libt_crand_nsmmra(double nu, double sigma,
     r = random_truncated_rice(nu, sigma, min, max);
     rotation *= M_PI / 180.0;
     if (angle != 0.0) {
-	double u = (double)random() / RAND_MAX;
+	double u = (double)random() / RANDOM_MAX;
 
 	if (angle < 0.0) {
 	    u *= 2.0;
@@ -366,7 +366,7 @@ static double complex _cg1(libt_crand_generator_t *cgp)
 	}
     }
     if (angle != 0.0) {
-	double u = (double)random() / RAND_MAX;
+	double u = (double)random() / RANDOM_MAX;
 
 	if (angle < 0.0) {
 	    u *= 2.0;
@@ -402,7 +402,7 @@ typedef struct _cg2 {
 static double complex _cg2(libt_crand_generator_t *cgp)
 {
     _cg2_t *cg2p = (_cg2_t *)cgp;
-    double u1 = (double)random() / RAND_MAX;
+    double u1 = (double)random() / RANDOM_MAX;
     double q = cg2p->cg2_q1 + (cg2p->cg2_q2 - cg2p->cg2_q1) * u1;
     double r = rice_inverse_cdf(cg2p->cg2_nu, cg2p->cg2_sigma, q);
     double rotation = cg2p->cg2_rotation;
@@ -422,7 +422,7 @@ static double complex _cg2(libt_crand_generator_t *cgp)
      * Generate the random angle.
      */
     if (angle != 0.0) {
-	double u2 = (double)random() / RAND_MAX;
+	double u2 = (double)random() / (RANDOM_MAX + 1.0);
 
 	if (angle < 0.0) {
 	    u2 *= 2.0;
@@ -436,13 +436,20 @@ static double complex _cg2(libt_crand_generator_t *cgp)
     return r * cexp(rotation * I);
 }
 
-/* libt_crand_generator: return a random generator for the given parameters
+/*
+ * libt_crand_generator: return a random generator for the given parameters
  *   @nu:    distance from reference point to origin
  *   @sigma: scale
  *   @min:   minimum magnitude to return
  *   @max:   maximum magnitude to return
  *   @rotation: center of arc
- *   @angle: interior angle of arc (mirror is negative)
+ *   @angle: interior angle of arc (mirror if negative)
+ *
+ * This function returns a random number generator that produces complex
+ * random numbers with magnitude between between min and max, following
+ * a truncated Rice(ν, σ) distribution, and angle between rotation
+ * plus or minus angle over two.  If angle is negative, then the range
+ * of angles also includes minus rotation plus or minus angle over two.
  *
  * Caller is responsible for freeing the returned structure by a
  * call to free().
@@ -490,8 +497,8 @@ libt_crand_generator_t *libt_crand_generator(double nu, double sigma,
 	 * If there is a reasonable probability that we'll find a solution
 	 * with magnitude within min and max in a few iterations, use
 	 * the iterative generator.  The iterative generator is quite
-	 * a bit faster than the general one, so finding the solution
-	 * within a few tries is faster.
+	 * a bit faster than the general one, so making a few tries is
+	 * faster.
 	 */
 	if (q2 - q1 >= 0.25) {
 	    _cg1_t *cg1p;
