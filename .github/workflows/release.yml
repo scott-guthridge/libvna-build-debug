@@ -75,6 +75,8 @@ jobs:
         draft: false
         prerelease: false
     - name: Download Assets
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         mkdir assets
         cd assets
