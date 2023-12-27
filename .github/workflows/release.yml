@@ -33,13 +33,13 @@ jobs:
     - name: Upload Artifacts (Linux)
       if: ${{ runner.os == 'Linux' }}
       uses: actions/upload-artifact@v3
-        with:
-          name: ${{ replace(github.ref, 'refs/tags/', '') }}-${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
-          path: |
-            libvna-*.tar.gz
-            deb/*.deb
-            deb/*.dsc
-            deb/*.buildinfo
+      with:
+        name: ${{ replace(github.ref, 'refs/tags/', '') }}-${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
+        path: |
+          libvna-*.tar.gz
+          deb/*.deb
+          deb/*.dsc
+          deb/*.buildinfo
     - name: Setup MSYS2
       if: ${{ runner.os == 'Windows' }}
       uses: msys2/setup-msys2@v2
@@ -57,9 +57,9 @@ jobs:
     - name: Upload Artifacts (Windows)
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v3
-        with:
-          name: ${{ replace(github.ref, 'refs/tags/', '') }}-${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
-          path: libvna-windows-x86_64.zip
+      with:
+        name: ${{ replace(github.ref, 'refs/tags/', '') }}-${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
+        path: libvna-windows-x86_64.zip
 
   make_release:
     name: Make Release
