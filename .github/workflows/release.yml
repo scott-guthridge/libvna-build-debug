@@ -10,7 +10,7 @@ jobs:
       matrix:
         buildplat:
         - { sys: ubuntu-22.04, arch: x86_64 }
-        - { sys: windows-2019, arch: x86_64 }
+        # - { sys: windows-2019, arch: x86_64 }
       fail-fast: true
     runs-on: ${{ matrix.buildplat.sys }}
     steps:
@@ -82,7 +82,8 @@ jobs:
         cd assets
         echo "Before:"
         ls
-        gh run download "context.payload.workflow_run.id"
+        gh run download --repo "${GITHUB_REPOSITORY}" \
+          "context.payload.workflow_run.id"
         echo "After:"
         ls
         echo "gitgub.ref: ${{ github.ref }}"
