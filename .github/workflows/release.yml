@@ -80,6 +80,15 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - name: Download Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+        # path: ${{ github.workspace }}/artifacts
+        merge-multiple: true
+    - name: Check Artifacts
+      run: |
+        ls -R artifacts
     - name: Create Release
       uses: actions/create-release@v1
       env:
@@ -89,16 +98,6 @@ jobs:
         release_name: Release ${{ github.ref }}
         draft: false
         prerelease: false
-    - name: Download Artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: artifacts
-        # path: ${{ github.workspace }}/artifacts
-        run-id: ${{ github.event.workflow_run.id }}
-        merge-multiple: true
-    - name: Check Artifacts
-      run: |
-        ls -R artifacts
     - name: Upload Release Assets
       uses: alexellis/upload-assets@0.4.0
       env:
