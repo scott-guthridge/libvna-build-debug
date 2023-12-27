@@ -63,22 +63,17 @@ jobs:
     - name: Build Artifact (Test)
       if: ${{ runner.os == 'macOS' }}
       run: |
-        echo "Test Data" > test.data
-        mkdir testdir
-        echo "More Data" > testdir/more.data
-        echo "cc: `which cc || :`"
-        echo "brew: `which brew || :`"
-        echo "git: `which git || :`"
-        echo "autoconf: `which autoconf || :`"
-        echo "run_id: ${{ github.run_id }}"
+        brew install --build-bottle --formula libvna.rb
+        brew test libvna
+        brew bottle --force-core-tap libvna
+        ls -l
+        find `brew --prefix` -name \*libvna\*
     - name: Upload Artifacts (Mac)
       if: ${{ runner.os == 'macOS' }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
-        path: |
-          test.data 
-          testdir/*
+        path: *.bottle.tar.gz
 
   make_release:
     name: Make Release
@@ -91,9 +86,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
-        name: macos-latest-test_arch
         path: artifacts
-        # path: ${{ github.workspace }}/artifacts
         merge-multiple: true
     - name: Check Artifacts
       run: |
