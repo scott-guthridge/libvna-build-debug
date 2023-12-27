@@ -64,16 +64,21 @@ jobs:
       if: ${{ runner.os == 'macOS' }}
       run: |
         echo "Test Data" > test.data
+        mkdir testdir
+        echo "More Data" > testdir/more.data
         echo "cc: `which cc || :`"
         echo "brew: `which brew || :`"
         echo "git: `which git || :`"
         echo "autoconf: `which autoconf || :`"
+        echo "run-id: ${{ github.run-id }}"
     - name: Upload Artifacts (Mac)
       if: ${{ runner.os == 'macOS' }}
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
-        path: test.data
+        path: |
+          test.data 
+          testdir/*
 
   make_release:
     name: Make Release
@@ -83,6 +88,7 @@ jobs:
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
+        name: macos-latest-test_arch
         path: artifacts
         # path: ${{ github.workspace }}/artifacts
         merge-multiple: true
