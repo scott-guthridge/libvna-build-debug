@@ -81,12 +81,12 @@ jobs:
         mkdir assets
         cd assets
         echo "gitgub.ref: ${{ github.ref }}"
-        echo "run-id: ${{ context.payload.workflow_run.id }}"
+        echo "run-id: ${{ github.run_id }}"
         echo "repo: ${GITHUB_REPOSITORY}"
         echo "Before:"
         ls
         gh run download --repo "${GITHUB_REPOSITORY}" \
-          "${{ context.payload.workflow_run.id }}"
+          "${{ github.run_id }}"
         echo "After:"
         ls
     - name: Upload Release Assets
