@@ -6,7 +6,6 @@ on:
 jobs:
   build:
     name: Build assets for ${{matrix.buildplat.sys}} ${{matrix.buildplat.arch}}
-    id: build
     strategy:
       matrix:
         buildplat:
