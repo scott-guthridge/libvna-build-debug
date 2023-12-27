@@ -80,13 +80,15 @@ jobs:
       run: |
         mkdir assets
         cd assets
+        echo "gitgub.ref: ${{ github.ref }}"
+        echo "run-id: ${{ context.payload.workflow_run.id }}"
+        echo "repo: ${GITHUB_REPOSITORY}"
         echo "Before:"
         ls
         gh run download --repo "${GITHUB_REPOSITORY}" \
-          "context.payload.workflow_run.id"
+          "${{ context.payload.workflow_run.id }}"
         echo "After:"
         ls
-        echo "gitgub.ref: ${{ github.ref }}"
     - name: Upload Release Assets
       uses: alexellis/upload-assets@0.4.0
       env:
