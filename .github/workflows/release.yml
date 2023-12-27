@@ -33,7 +33,7 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ replace(github.ref, 'refs/tags/', '') }}-${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
+        name: ${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
         path: |
           libvna-*.tar.gz
           deb/*.deb
@@ -57,7 +57,7 @@ jobs:
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ replace(github.ref, 'refs/tags/', '') }}-${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
+        name: ${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
         path: libvna-windows-x86_64.zip
 
   make_release:
@@ -83,6 +83,7 @@ jobs:
         gh run download "context.payload.workflow_run.id"
         echo "After:"
         ls
+        echo "gitgub.ref: ${{ github.ref }}"
     - name: Upload Release Assets
       uses: alexellis/upload-assets@0.4.0
       env:
