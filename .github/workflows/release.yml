@@ -70,7 +70,7 @@ jobs:
         echo "brew: `which brew || :`"
         echo "git: `which git || :`"
         echo "autoconf: `which autoconf || :`"
-        echo "run-id: ${{ github.run-id }}"
+        echo "run_id: ${{ github.run_id }}"
     - name: Upload Artifacts (Mac)
       if: ${{ runner.os == 'macOS' }}
       uses: actions/upload-artifact@v3
@@ -85,6 +85,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - name: Delay
+      run: |
+        sleep 5
     - name: Download Artifacts
       uses: actions/download-artifact@v4
       with:
