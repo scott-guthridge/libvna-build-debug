@@ -9,7 +9,8 @@ jobs:
     strategy:
       matrix:
         buildplat:
-        - { sys: ubuntu-22.04, arch: x86_64 }
+        - { sys: macos-latest, arch: test_arch }
+        # - { sys: ubuntu-22.04, arch: x86_64 }
         # - { sys: windows-2019, arch: x86_64 }
       fail-fast: true
     runs-on: ${{ matrix.buildplat.sys }}
@@ -59,6 +60,20 @@ jobs:
       with:
         name: ${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
         path: libvna-windows-x86_64.zip
+    - name: Build Artifact (Test)
+      if: ${{ runner.os == 'macOS' }}
+      run: |
+        echo "Test Data" > test.data
+        echo "cc: `which cc || :`"
+        echo "brew: `which brew || :`"
+        echo "git: `which git || :`"
+        echo "autoconf: `which autoconf || :`"
+    - name: Upload Artifacts (Mac)
+      if: ${{ runner.os == 'macOS' }}
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.buildplat.sys }}-${{ matrix.buildplat.arch }}
+        path: test.data
 
   make_release:
     name: Make Release
@@ -79,6 +94,7 @@ jobs:
       with:
         path: artifacts
         # path: ${{ github.workspace }}/artifacts
+        run-id: ${{ github.event.workflow_run.id }}
         merge-multiple: true
     - name: Check Artifacts
       run: |
