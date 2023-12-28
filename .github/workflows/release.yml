@@ -29,6 +29,11 @@ jobs:
         ./bootstrap
         ./configure
         make -j10 deb
+    - name: Build RPM (Linux)
+      if: ${{ runner.os == 'Linux' }}
+      run: |
+        podman run --rm -v "`pwd`:/libvna" fedora:30 \
+            /libvna/.github/tools/make-rpm
     - name: Upload Artifacts (Linux)
       if: ${{ runner.os == 'Linux' }}
       uses: actions/upload-artifact@v4
@@ -39,6 +44,8 @@ jobs:
           deb/*.deb
           deb/*.dsc
           deb/*.buildinfo
+          rpm/*.src.rpm
+          rpm/x86_64/*.rpm
     - name: Setup MSYS2
       if: ${{ runner.os == 'Windows' }}
       uses: msys2/setup-msys2@v2

@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# This build is run inside of a fedora container.
+#
+set -e
+yum install -y autoconf automake gcc git libtool libyaml-devel make rpm-build
+cd /libvna
+./bootstrap
+./configure
+make -j12 rpm
