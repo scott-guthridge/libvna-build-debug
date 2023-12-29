@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         buildplat:
-        - { sys: ubuntu-20.04, arch: x86_64 }
+        - { sys: ubuntu-22.04, arch: x86_64 }
         - { sys: windows-2019, arch: x86_64 }
       fail-fast: true
     runs-on: ${{ matrix.buildplat.sys }}
