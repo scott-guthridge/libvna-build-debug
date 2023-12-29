@@ -33,7 +33,7 @@ jobs:
     - name: Build RPM Package (Linux)
       if: ${{ runner.os == 'Linux' }}
       run: |
-        podman run --rm -v "`pwd`:/libvna" quay.io/pypa/manylinux2014_x86_64 \
+        podman run --rm -v "`pwd`:/libvna" quay.io/pypa/manylinux_2_24 \
             /libvna/.github/tools/make-rpm
     - name: Upload Artifacts (Linux)
       if: ${{ runner.os == 'Linux' }}
