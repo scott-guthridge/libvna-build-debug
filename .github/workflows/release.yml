@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         buildplat:
-        - { sys: ubuntu-22.04, arch: x86_64 }
+        - { sys: ubuntu-20.04, arch: x86_64 }
         - { sys: windows-2019, arch: x86_64 }
       fail-fast: true
     runs-on: ${{ matrix.buildplat.sys }}
@@ -33,7 +33,7 @@ jobs:
     - name: Build RPM Package (Linux)
       if: ${{ runner.os == 'Linux' }}
       run: |
-        podman run --rm -v "`pwd`:/libvna" quay.io/pypa/manylinux_2_24_x86_64 \
+        podman run --rm -v "`pwd`:/libvna" fedora:35 \
             /libvna/.github/tools/make-rpm
     - name: Upload Artifacts (Linux)
       if: ${{ runner.os == 'Linux' }}
