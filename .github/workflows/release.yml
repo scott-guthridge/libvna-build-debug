@@ -47,7 +47,7 @@ jobs:
           deb/*.dsc
           deb/*.buildinfo
           rpm/SRPMS/*.src.rpm
-          rpm/RPMS/${{ $matrix.buildplat.arch }}/*.rpm
+          rpm/RPMS/${{ matrix.buildplat.arch }}/*.rpm
     - name: Setup MSYS2 (Windows)
       if: ${{ runner.os == 'Windows' }}
       uses: msys2/setup-msys2@v2
