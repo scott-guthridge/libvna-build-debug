@@ -21,10 +21,11 @@ mv src/*.pdf "/tmp/${dir}/doc"
 cp /ucrt64/bin/libyaml*.dll "/tmp/${dir}/bin/"
 cp /ucrt64/lib/libyaml*.a "/tmp/${dir}/lib"
 # Make some effort to convert for Microsoft Visual C's version of complex.
-( cd "/tmp/${dir}"
+(
+    cd "/tmp/${dir}"
     mv share/doc/libvna/COPYING doc/
     mv share/doc/libvna/examples examples
-    rm -rf share &&
+    rm -rf share
     sed -i -e 's/\<double complex\>/_Dcomplex/g' include/*.h examples/*.[hc]
     sed -i -e '
 	s/{ Z1, Z2 }/{{ Z1, 0.0 }, { Z2, 0.0 }}/
@@ -32,7 +33,8 @@ cp /ucrt64/lib/libyaml*.a "/tmp/${dir}/lib"
 	s/{ R2,    R2 }/{{ R2,    0.0 }, { R2, 0.0 }}/
     ' examples/vnaconv-example.c
     sed -i -e '
-	/<complex.h>/s/^\/* File must be converted for Microsoft C. *\/\n\n/
-    ' examples/vnacal*.c examples/vnadata-example.c )
+	/<complex.h>/s/^/\/* NOTE: needs convertion for Microsoft C! *\/\n\n/
+    ' examples/vnacal*.c examples/vnadata-example.c
+)
 ( cd /tmp && zip -r "${dir}" "${dir}" )
 mv /tmp/${dir}.zip .
