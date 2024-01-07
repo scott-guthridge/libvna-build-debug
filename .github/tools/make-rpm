@@ -1,6 +1,7 @@
 #!/bin/sh
 #
-# This build is run inside of a fedora container.
+# This build is run inside of a manylinux2014_x86_64 container based
+# on Fedora Linux.
 #
 set -e
 yum install -y autoconf automake gcc git libtool libyaml-devel make rpm-build

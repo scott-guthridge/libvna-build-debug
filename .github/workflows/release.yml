@@ -15,6 +15,7 @@ jobs:
     runs-on: ${{ matrix.buildplat.sys }}
     steps:
     - name: Prepare git (Windows)
+      # Tell git not to convert newlines to CR-LF.
       if: ${{ runner.os == 'Windows' }}
       run: |
         git config --global core.autocrlf false
@@ -30,7 +31,7 @@ jobs:
         ./bootstrap
         ./configure
         make -j10 deb
-    - name: Build RPM Package (Linux)
+    - name: Build Manylinux RPM Package (Linux)
       if: ${{ runner.os == 'Linux' }}
       run: |
         podman run --rm -v "`pwd`:/libvna" \
@@ -70,6 +71,8 @@ jobs:
         path: libvna-windows-x86_64.zip
 
   make_release:
+    # Collect artifacts from the matrix above, create and release
+    # and upload release assets.
     name: Make Release
     needs: build
     runs-on: ubuntu-latest
