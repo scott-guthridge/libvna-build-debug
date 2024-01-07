@@ -25,7 +25,7 @@ cp /ucrt64/lib/libyaml*.a "/tmp/${dir}/lib"
     mv share/doc/libvna/COPYING doc/
     mv share/doc/libvna/examples examples
     rm -rf share &&
-    sed -i -e 's/\<double complex\>/_Dcomplex/g' include/*.h examples/*.[hc] )
+    sed -i -e 's/\<double complex\>/_Dcomplex/g' include/*.h examples/*.[hc]
     sed -i -e '
 	s/{ Z1, Z2 }/{{ Z1, 0.0 }, { Z2, 0.0 }}/
 	s/{ R1+R2, R2 }/{{ R1+R2, 0.0 }, { R2, 0.0 }}/
@@ -33,6 +33,6 @@ cp /ucrt64/lib/libyaml*.a "/tmp/${dir}/lib"
     ' examples/vnaconv-example.c
     sed -i -e '
 	/<complex.h>/s/^\/* File must be converted for Microsoft C. *\/\n\n/
-    ' examples/vnacal*.c examples/vnadata-example.c
+    ' examples/vnacal*.c examples/vnadata-example.c )
 ( cd /tmp && zip -r "${dir}" "${dir}" )
 mv /tmp/${dir}.zip .
