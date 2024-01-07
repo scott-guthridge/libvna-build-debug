@@ -9,8 +9,8 @@ git clone https://github.com/yaml/libyaml.git
     make install )
 mkdir "/tmp/${dir}"
 ./bootstrap
-./configure "--prefix=/tmp/${dir}" "LDFLAGS=-static-libgcc"
-make -j10 install
+./configure "--prefix=/${dir}" "LDFLAGS=-static-libgcc"
+DESTDIR=/tmp make -j10 install
 sed -i -e '
     s/\<double complex\>/_Dcomplex/g
     s/\<fBdouble complex\>/fB_Dcomplex/g
@@ -18,23 +18,30 @@ sed -i -e '
 make pdfman
 mkdir "/tmp/${dir}/doc"
 mv src/*.pdf "/tmp/${dir}/doc"
+cp /ucrt64/include/yaml.h "/tmp/${dir}/include/"
 cp /ucrt64/bin/libyaml*.dll "/tmp/${dir}/bin/"
-cp /ucrt64/lib/libyaml*.a "/tmp/${dir}/lib"
-# Make some effort to convert for Microsoft Visual C's version of complex.
+cp /ucrt64/lib/libyaml*.a "/tmp/${dir}/lib/"
+cp /ucrt64/lib/pkgconfig/yaml-*.pc "/tmp/${dir}/lib/pkgconfig/"
+# Simplify the directory hierarchy of the install directories.
 (
     cd "/tmp/${dir}"
     mv share/doc/libvna/COPYING doc/
     mv share/doc/libvna/examples examples
     rm -rf share
+    # Make some effort to convert for Microsoft Visual C's version of complex.
     sed -i -e 's/\<double complex\>/_Dcomplex/g' include/*.h examples/*.[hc]
     sed -i -e '
 	s/{ Z1, Z2 }/{{ Z1, 0.0 }, { Z2, 0.0 }}/
 	s/{ R1+R2, R2 }/{{ R1+R2, 0.0 }, { R2, 0.0 }}/
 	s/{ R2,    R2 }/{{ R2,    0.0 }, { R2, 0.0 }}/
     ' examples/vnaconv-example.c
+    # These are too hard to fix.  Just add a comment.
     sed -i -e '
-	/<complex.h>/s/^/\/* NOTE: needs convertion for Microsoft C! *\/\n\n/
+	1s@^@/* NOTE: needs convertion for Microsoft C! */\n\n@
     ' examples/vnacal*.c examples/vnadata-example.c
+    # Patch the pkg-config files assuming installation in C:\opt
+    sed -i -e 's@^prefix=@&C:/opt@' lib/pkgconfig/libvna.pc
+    sed -i -e "s@^prefix=.*@prefix=C:/opt/${dir}@" lib/pkgconfig/yaml-*.pc
 )
 ( cd /tmp && zip -r "${dir}" "${dir}" )
 mv /tmp/${dir}.zip .
